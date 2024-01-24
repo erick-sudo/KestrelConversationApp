@@ -1,0 +1,44 @@
+version: '3.4'
+
+networks:
+  conversationappnetwork:
+
+services:
+  mssql:
+    container_name: ConversationApp_Database
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      -  1433:1433
+    environment: 
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=dbStrongP@ssword1*
+    networks:
+      - conversationappnetwork
+    healthcheck:
+     test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "dbStrongP@ssword1*", "-Q", "SELECT 1"]
+     interval: 30s
+     timeout: 10s
+     retries: 5
+
+  conversationapp:
+    container_name: ConversationApp
+    image: ${DOCKER_REGISTRY-}webui
+    build:
+      context: .
+      dockerfile: src/WebUI/Dockerfile
+    depends_on:
+      mssql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - conversationappnetwork
+ 
+  maildev:
+    container_name: MailService
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - conversationappnetwork
