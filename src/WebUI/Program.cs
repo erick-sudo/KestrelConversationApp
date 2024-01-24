@@ -14,21 +14,6 @@ builder.Configuration.AddAppSettings();
 
 builder.Services.AddInfrastructure(builder);
 
-// builder.WebHost.UseKestrel(options =>
-// {
-//     // Paths to the certificate files
-//     string cetificatePath = "/https/conversationapp.crt";
-//     string cetificateKeyPath = "/https/conversationapp.key";
-
-//     // Configure Kestrel to use the provided certificates
-//     options.ListenAnyIP(8080); // HTTP
-//     options.ListenAnyIP(8081, listenOptions =>
-//     {
-//         // HTTPS
-//         listenOptions.UseHttps(cetificatePath, cetificateKeyPath);
-//     });
-// });
-
 builder.Host.UseSerilog((_, config) => config
     .ReadFrom.Configuration(builder.Configuration));
 
