@@ -7,10 +7,9 @@ services:
       - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:8081;http://+:8080
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-    #   - ASPNETCORE_Kestrel__Certificates__Default__Password=cert_1_strong@password
-    #   - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/https/conversationapp.pfx
-    # volumes:
-    #   - ./https/conversationapp.pfx:/home/app/https/conversationapp.pfx:ro
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/conversationapp.crt
+      - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/app/https/conversationapp.key
+    volumes:
+      - ./ssl-certs:/app/https:ro

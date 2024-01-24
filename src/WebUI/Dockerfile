@@ -18,13 +18,6 @@ COPY . .
 WORKDIR "/src/src/WebUI"
 RUN dotnet build "./WebUI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Generate and Configure HTTPS Certificate
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS generate-certificate
-WORKDIR /https
-
-# Create a self-signed certificate for development purposes
-RUN openssl req -x509 -nodes -newkey rsa:4096 -keyout conversationapp.key -out conversationapp.crt -days 365 -subj "/CN=localhost"
-
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -35,8 +28,4 @@ ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Copy the generated certificate from the generate-certificate image
-COPY --from=generate-certificate /https/conversationapp.crt /https/conversationapp.crt
-COPY --from=generate-certificate /https/conversationapp.key /https/conversationapp.key
-
-ENTRYPOINT ["dotnet", "WebUI.dll", "--urls", "http://0.0.0.0:8080", "https://0.0.0.0:8081"]
+ENTRYPOINT ["dotnet", "WebUI.dll"]
